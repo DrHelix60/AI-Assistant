@@ -1,19 +1,45 @@
-<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>org.jetbrains.plugins.template</id>
-    <name>IntelliJ Platform Plugin Template</name>
-    <vendor>JetBrains</vendor>
-    <description><![CDATA[
-        <p><b>IntelliJ Platform Plugin Template</b> is a repository that provides a pure template to make it easier to create a new plugin project.</p>
-        <p>The main goal of this template is to speed up the setup phase of plugin development for both new and experienced developers by preconfiguring the project scaffold and CI, linking to the proper documentation pages, and keeping everything organized.</p>
-    ]]></description>
+    <id>rsdltj.myplugin</id>
+    <name>AI Assistant Plugin</name>
+    <vendor>Rafael Santiago De La Torre Jiménez</vendor>
+    <description>This AI plugin helps maintain coding conventions, as well as offer some quick quality of life utilities</description>
 
     <depends>com.intellij.modules.platform</depends>
 
-    <resource-bundle>messages.MyBundle</resource-bundle>
-
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="org.jetbrains.plugins.template.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-        <postStartupActivity implementation="org.jetbrains.plugins.template.startup.MyProjectActivity" />
+        <applicationService serviceImplementation="rsdltj.myplugin.settings.OllamaSettings"/>
+        <applicationConfigurable
+                parentId="tools"
+                instance="rsdltj.myplugin.settings.OllamaConfigurable"
+                id="rsdltj.myplugin.settings.OllamaConfigurable"
+                displayName="Ollama AI"/>
+        <applicationService serviceImplementation="rsdltj.myplugin.core.OllamaProcessManager"/>
+        <postStartupActivity implementation="rsdltj.myplugin.core.OllamaStartupActivity"/>
+
     </extensions>
+
+    <actions>
+        <action id="rsdltj.myplugin.actions.TestOllamaAction"
+                class="rsdltj.myplugin.actions.TestAction"
+                text="Test Ollama Connection"
+                description="Send a test prompt to your local Ollama instance">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+        <action id="rsdltj.myplugin.actions.commenting.CommentAction"
+                class="rsdltj.myplugin.actions.commenting.CommentAction"
+                text="Explain This Code"
+                description="Get AI explanation for selected Java code">
+            <add-to-group group-id="EditorPopupMenu" anchor="first"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt E"/>
+        </action>
+        <action id="rsdltj.myplugin.actions.convention.ConventionAction"
+                class="rsdltj.myplugin.actions.convention.ConventionAction"
+                text="Fix Conventions"
+                description="Check and fix Java naming conventions in the current file">
+            <add-to-group group-id="EditorPopupMenu"
+                          anchor="after"
+                          relative-to-action="rsdltj.myplugin.actions.commenting.CommentAction"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="ctrl shift alt Z" />
+        </action>
+    </actions>
 </idea-plugin>
